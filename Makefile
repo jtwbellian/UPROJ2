@@ -1,9 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -c
 LDFLAGS = -lncurses
-OBJS = Editor.o	Proj2.o textBuffer.o
+OBJS = Editor.o	Proj2.o textBuffer.o Delete.o
 TARGET = Proj2
-DEPS = Editor.h textBuffer.h
+DEPS = Editor.h textBuffer.h delete.h
 
 #all: $(TARGET)
 
@@ -18,6 +18,9 @@ Editor.o: Editor.h
 
 textBuffer.o: textBuffer.h
 	$(CC) $(CFLAGS) -o textBuffer.o textBuffer.c $(LDFLAGS)
+
+Delete.o: delete.h
+	$(CC) $(CFLAGS) -o Delete.o delete.c $(LDFLAGS)
 
 #test: Proj2 Editor.h
 #	./Proj2
