@@ -21,5 +21,6 @@ typedef struct TextBuffer{
 
 
 int fillBuffer(char* file, char* textBuffer[], int lineCount);
+void addNewLine(buffer* ptr, int line, int lineCount);
 
 #endif
