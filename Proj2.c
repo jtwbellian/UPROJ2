@@ -1,106 +1,45 @@
 #include <stdio.h>
-#include <ncurses.h> 
+#include "Editor.h"
+#include "textBuffer.h"
 
-int main()
+int main(int argc, char * argv[])
 {
-	
-	// start/setup nCurses
-	initscr();
-	//start_color();
-	raw(); 
-	keypad(stdscr, TRUE);
-	noecho();
+	char* file;
 
-	char * filename = "fileA.txt";
-	wattron(stdscr,A_REVERSE);
-	printw("Group 1\t\tFILE: %s\n", filename);
-	wattroff(stdscr,A_REVERSE);
-
-	int ch;
-
-	int w, h, // the width and height of the window
-	    x, y; // the x,y coordinates of the cursor
-	int scroll = 0;
-	
-	bool active = true;
-	bool edit_mode = false;
-	
-	// Set width and height to window size
-	getmaxyx(stdscr, h,w);	
-	x = 0;
-	y = 2;
-
-	
-        mvprintw(h/2,w/3, " Welcome to Group 1 Text Editor! ");
-	refresh();
-		
-	while (active)
+	// Check to ensure argument for text file has been given 
+	if (argc != 2)
 	{
-		ch = getch(); // gets the users key
-
-		switch(ch)
-		{	
-		case KEY_LEFT: 
-			if (x > 1)
-				x --;
-			break;
-		case KEY_RIGHT:
-			if (x < w-1)
-				x ++; 
-			break;
-		case KEY_UP:
-			if (y > 1)
-				y --;
-			else if (scroll > 0)
-				scroll --;
-			break;
-		case KEY_DOWN: 
-			if (y < h-2)
-				y ++;
-			else
-				scroll ++;
-			break;
-		default: 
-			active = false; 
-			break;
-		}
-		clear_window();
-		                wattron(stdscr,A_REVERSE);
-                mvprintw(h-1,1,edit_mode ? "Line %d,%d) \t-EDIT MODE-":"Line %d,%d \t-TYPE MODE-", y + scroll,x);
-                wattroff(stdscr,A_REVERSE);
+		printf("Wrong number of arguments to start text editor.\n Please supply 1 argument : the name of the file you wish to open.\n\n (Program will now terminate)\n");
+		return 1;
+	}
 	
-		wmove(stdscr,y,x);
-
-
-		refresh();
+	if (!fopen(argv[1], "r"))
+	{
+		printf("File \'%s\' was not found. Make sure it's in the right directory!\n (Program will now terminate)\n", argv[1]);
+		return 1;
+	}
+	else
+	{
+		file = argv[1];
 	}
 
-	mvprintw(h/2,w/3,"PROGRAM WILL NOW TERMINATE");
-	mvprintw(h/2+1,w/3,"Goodbye!");
-	getch();
-	
-	endwin();
-	
-	return 0;
+	// Creates the text buffer structure
+        // ( Start of Johns textBuffer initialization)
+	buffer tb;
+	buffer *ptr = &tb;
+        ptr = (buffer *)malloc(sizeof( buffer));
+        //initialize variables of the struct buffer
+        ptr->lineCount = 0;
+        char ** lines = ptr->textBuffer;
+
+        //Pass in those values
+        //ptr->textBuffer should have everything
+        ptr->lineCount = fillBuffer(file, lines, ptr->lineCount);
+
+        // (End of Johns textBuffer initialization)
+
+	// Creates the Ncurses Editor
+	Editor editor;
+	Editor *eptr = &editor;
+	init(eptr, lines, ptr->lineCount);
 }
-
-void clear_window()
-{
-	int width, height;
-	getmaxyx(stdscr,height,width);
-
-	for(int i = 1; i < height-1; i++)
-	for(int j = 1; j < width; j++)
-	{	
-		//attron(COLOR_CYAN);
-		if (j==1)
-			mvprintw(i,j,"~");
-		else
-			mvprintw(i,j," ");
-		//attroff(COLOR_CYAN);
-	}
-
-}
-
-
-
