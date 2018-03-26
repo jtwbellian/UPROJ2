@@ -2,6 +2,10 @@
 #include <string.h> 
 #define SIZE 10
 #define LENGTH 180
+
+
+
+
 int main()
 {
     char str[SIZE][LENGTH] = {"Test\0","These are times\0","That try Men's souls\0"};
@@ -9,17 +13,20 @@ int main()
     char mesg[]="Enter a string: ";		
     char sub[80];
     int row,col;
+
+    int linelocation;
+    int whichstring;
 		 
     initscr();				
-    getmaxyx(stdscr,row,col);		
-    mvprintw(row/2,(col-strlen(mesg))/2,"%s",mesg);
-                     		
+    getmaxyx(stdscr,row,col);	
+	
+    mvprintw(LINES - 4, 0, "%s",mesg);              		
     getstr(sub);
-    mvprintw(LINES - 6, 0, "You Entered: %s", sub);
+
+    mvprintw(LINES - 4, 0, "You Entered: %s", sub);
 
     int i, j=0, k;
    bool flag = true;
-
    for ( int n = 0; n < SIZE; ++n )
     {
         j=0;
@@ -33,7 +40,9 @@ int main()
            if(!sub[j])
             {
             flag = false;
-            mvprintw(LINES - 5, 0, "Substring");
+            whichstring = n;
+            linelocation = i;
+            move(n,i);
             break;
             }
         }
@@ -41,27 +50,26 @@ int main()
     }
     if ( flag )
     {
-        mvprintw(LINES - 5, 0, "Not a substring");
+        mvprintw(LINES - 3, 0, "Not a substring");
     }
 
     if ( !flag )
     {
         char answer;
-        mvprintw(LINES - 4, 0, "Do you want to replace the string located here with another? y/n: ");
+        mvprintw(LINES - 3, 0, "Do you want to replace the string located here with another? y/n: ");
         answer = getch();
-
-        mvprintw(LINES - 10, 0, "Here: %c", answer);
         
-        if ( &answer == "y" || &answer == "Y" )
+        if ( answer == 'y' || answer == 'Y' )
         {
-            mvprintw(LINES - 3, 0, "What do you want to replace it with?");
+            mvprintw(LINES - 2, 0, "What do you want to replace it with?");
             char newstr[80];
             getstr(newstr);
-            mvprintw(LINES - 3, 0, "You Entered: %s", newstr);
+            strcpy(str[whichstring][linelocation], newstr);
+            
         }
         else
         {
-            mvprintw(LINES - 3, 0, "Thsi is stupid");
+            mvprintw(LINES - 2, 0, "Thsi is stupid");
         }
     }
 
