@@ -1,44 +1,31 @@
-#include <fcntl.h>
+void copyPaste(char choice, int SIZE, char pasted[]){
+    if(choice = 'c'){
+        printw("Enter text to copy (end with ';'): ");//prompt for copy text
 
-char *editorRowsToString(int *buflen) {
-  int totlen = 0;
-  int j;
-  for (j = 0; j < E.numrows; j++)
-    totlen += E.row[j].size + 1;
-  *buflen = totlen;
-  char *buf = malloc(totlen);
-  char *p = buf;
-  for (j = 0; j < E.numrows; j++) {
-    memcpy(p, E.row[j].chars, E.row[j].size);
-    p += E.row[j].size;
-    *p = '\n';
-    p++;
-  }
-  return buf;
-}
-
-
-
-void editorSave() {
-  if (E.filename == NULL) return;
-  int len;
-  char *buf = editorRowsToString(&len);
-  int fd = open(E.filename, O_RDWR | O_CREAT, 0644);
-  if (fd != -1) {
-    if (ftruncate(fd, len) != -1) {
-      if (write(fd, buf, len) == len) {
-        close(fd);
-        free(buf);
-        editorSetStatusMessage("%d bytes written to disk", len);
-        return;
-      }
+        for(int i = 0; i <= SIZE - 1; i++){
+            char input = getch();//get char from user
+            if (input == ';' || i == SIZE - 1){//copy stopper
+                printw("Copying finished.");
+                pasted[i] = ';';//definate semicolon entered
+                i = SIZE;//double assurance for falling out of loop
+                break;//fall out of loop
+            }
+            else{
+                pasted[i] = input;//char from user entered
+            }
+        }
+    }//copy
+    else if(choice = 'p'){
+        for(int i = 0; i < SIZE - 1; i++){
+            if(pasted[i] == ';'){//check for end line char
+                i = SIZE;//double assurance for falling out of loop
+                break;//stops at semicolon if you don't use entire array
+            }
+            else
+                insertchar(pasted[i]);
+        }//uses insertchar because that's technically happening anyway
+    }//paste
+    else{
+        printw("Error with choice");
     }
-    close(fd);
-  }
-  free(buf);
-  editorSetStatusMessage("Can't save! I/O error: %s", strerror(errno));
 }
-
-//  case CTRL_KEY('s'): //ADD TO KEYBOARD FUNCTIONS TO ENABLE CTRL_KEY + s
-//  editorSave();
-//  break;
