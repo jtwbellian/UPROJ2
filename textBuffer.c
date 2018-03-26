@@ -20,3 +20,22 @@ int fillBuffer(char* file, char* textBuffer[], int lineCount){
 	}
 	return lineCount;
 }
+
+
+
+void addNewLine(struct buffer* ptr, int line, int lineCount){
+	char** textBufferPtr = ptr->textBuffer;
+	int i;
+	//Move all indices down 1 to make room for the new line
+	for (i = lineCount; i >= line; i--){
+		textBufferPtr[i] = textBufferPtr[i - 1];
+	}
+
+	//Creating the new line where it should be
+	textBufferPtr[line - 1] = "\n";
+	
+	//Update lineCount
+	lineCount++;
+	ptr->lineCount = lineCount;
+	
+}
