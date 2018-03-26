@@ -27,7 +27,7 @@ typedef struct TextEditor
 } Editor;
 
 // Initializes ncurses and sets variables within the struct 'e'
-void init( Editor *e, char ** lines, int nl);
+void init( Editor *e, char ** lines, int nl, char * fn);
 
 // begins the main loop of the Editor (DOES NOT NEED CALLED, CALLED AFTER INIT)
 void start(Editor *e);

@@ -4,11 +4,12 @@
 
 #include "Editor.h"
 
-char * filename = "FILEA.txt";
+char filename[20];
 
 // Initializes ncurses and prepares the editor window
-void init(Editor *e, char ** lines, int nl)
+void init(Editor *e, char ** lines, int nl, char * fn)
 {
+	strncpy(filename, fn, 20);
 	// start/setup nCurses
         initscr();
         raw();
@@ -44,7 +45,6 @@ void start(Editor *e)
 {
 	
 	int ch;
-
 	while (e->mode != 'x')
         {
                	 ch  = getch(); // gets the users key
@@ -72,12 +72,17 @@ void start(Editor *e)
                         else
                                 e->scroll ++;
                         break;
+
+		// Go insert mode with 'i' (for VIM users)
+		case 73: 
+			e->mode = 'e';
                 case 27: // ESC pressed toggle mode
                         if (e->mode == 'e')
 				e->mode = 'c';
 			else
 				e->mode = 'e';
-			mvprintw(e->h-1,1, (e->mode == 'e') ? "Line %d,%d \t-EDIT MODE-     ":"Line %d,%d \t-COMMAND MODE-", e->y + e->scroll, e->x);		
+			mvprintw(e->h-1,1, (e->mode == 'e') ? "Line %d,%d \t-EDIT MODE-   ":"Line %d,%d \t-COMMAND MODE-",
+				 e->y + e->scroll, e->x);		
                         refresh();
 			break;
 		}
@@ -87,19 +92,20 @@ void start(Editor *e)
 		{
 			switch(ch)
 			{
+			// Quit 
 			case 'q': case 'Q':
 				e->mode = 'x';
 				break;
-
+			// add line
+			case 'o': case 'O':
+				e->num_lines = addNewLine(e->text, e->y + e->scroll + 1, e->num_lines);
+				break;
 			}		
 		}
 		// Keyboard input when in Edit Mode
 		if (e->mode == 'e')
 		{
 		
-		mvprintw(e->h-1,e->w-10,"INPUT: %d", ch );	
-		refresh();
-	
 		switch(ch)
 			{
 			// IGNORE THE FOLLOWING KEY COMMANDS (Handled above)
@@ -127,7 +133,7 @@ void start(Editor *e)
                 		}
 
                 		break;
-	
+			
 			// For everything else, handle in type function
 			default:
 				type(e,ch);
@@ -135,19 +141,16 @@ void start(Editor *e)
 			break;	
 			};
 		}
-	
                 clear_window(e);
                 update_window(e);
                 wattron(stdscr, A_REVERSE);
 		mvprintw(e->h-1,1, (e->mode == 'e') ? "Line %d,%d \t-EDIT MODE-":"Line %d,%d \t-COMMAND MODE-", e->y + e->scroll, e->x);
-
                 wattroff(stdscr,A_REVERSE);
 
                 wmove(stdscr,e->y,e->x);
 
-
                 refresh();
-        }
+       }
 
         clear_window(e);
         mvprintw(e->h/2,e->w/3,"PROGRAM WILL NOW TERMINATE");
@@ -165,7 +168,7 @@ void update_window(Editor *e)
         getmaxyx(stdscr,e->h,e->w);
 
         // Displays the text between the scroll position and the bottom of the window
-        for(int i = 0; (i < e->h && e->text[i + e->scroll + 1] != NULL); i ++)
+        for(int i = 0; (i < e->h); i ++)
         {
                 mvprintw(i + 1, 1, "%s", e->text[i + e->scroll]);
         }
@@ -194,13 +197,14 @@ bool type(Editor *e, char letter)
 	// Not a printable character
 	if (letter < 32 && letter > 126) 
 		return false;
-
+	
 	switch(letter)
 	{
 	// handle backspace
-	case 8:
+	/*
+	case 263:
 		// blank out line
-		e->text[ e->y + e->scroll -1][e->x-1] = ' ';
+		e->text[e->x][e->y + e->scroll] = ' ';
 
 		// adjust cursor
 		if (e->x >1)
@@ -214,21 +218,67 @@ bool type(Editor *e, char letter)
 				e->y --;
 		}
 
+		//push text back
+		for(int i = e->x; i < strlen(e->text[e->y + e->scroll]); i ++)
+		{
+			e->text[e->x - 1][e->y + e->scroll] = e->text[e->x][e->y + e->scroll];
+		}
+
 		break;
+*/
 	// type plain text
 	default:
-		e->text[ e->y + e->scroll -1][e->x - 1] = letter;
+		{	
 		if (e->x < e->w)
+		{
+	                char * newline = e->text[e->y + e->scroll -1];
+               		int size = strLen(newline);
+                	newline[size+1] = '\0';
+		
+			while (strLen(newline) < e->x - 1)
+				{
+				newline[strLen(newline)]= ' ';
+				newline[strLen(newline)+1] = '\0'; 
+				}
+	
+               	 	for(int i = size; i > e->x - 1; i --)
+               		{
+                        	newline[i] = newline[i-1];
+                	}
+        	        newline[e->x -1] = letter;
+	
+        	        e->text[e->y + e->scroll - 1] = newline;
+	
 			e->x += 1;
+		}
 		else
 		{
 			e->y += 1;
 			e->x = 2;
+			addNewLine(e->text, e->y, 0);
 		}
+	
+//		e->text[ e->y + e->scroll - 1] = newline;
+//`		free(newline);
 		break;
+		}
 	}
 
+	
 	return true;
+}
+
+// returns the length of a c-string
+int strLen(char * str)
+{
+	int i = 0;
+	while (str[i] != '\0')
+	{
+		i++;
+	}
+
+	return i;
+
 }
 
 

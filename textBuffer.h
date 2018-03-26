@@ -8,11 +8,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX_LEN_ROW 100
-#define MAX_LEN_COL 50
+#define MAX_LEN_ROW 999
+#define MAX_LEN_COL 99
 
 struct TextBuffer;
-
 typedef struct TextBuffer{
         char* textBuffer[MAX_LEN_ROW];
         char file[20];
@@ -21,6 +20,7 @@ typedef struct TextBuffer{
 
 
 int fillBuffer(char* file, char* textBuffer[], int lineCount);
-void addNewLine(buffer* ptr, int line, int lineCount);
+int addNewLine(char ** textBufferPtr, int line, int lineCount);
+
 
 #endif

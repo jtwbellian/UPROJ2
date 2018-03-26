@@ -18,13 +18,14 @@ int fillBuffer(char* file, char* textBuffer[], int lineCount){
 	while (lineCount < MAX_LEN_ROW && fgets(textBuffer[lineCount], MAX_LEN_COL, in)){
 		lineCount++;	
 	}
+
+//	free(textBuffer);
 	return lineCount;
+
 }
 
 
-
-void addNewLine(struct buffer* ptr, int line, int lineCount){
-	char** textBufferPtr = ptr->textBuffer;
+int addNewLine(char ** textBufferPtr, int line, int lineCount){
 	int i;
 	//Move all indices down 1 to make room for the new line
 	for (i = lineCount; i >= line; i--){
@@ -32,10 +33,8 @@ void addNewLine(struct buffer* ptr, int line, int lineCount){
 	}
 
 	//Creating the new line where it should be
-	textBufferPtr[line - 1] = "\n";
+	textBufferPtr[line - 1] = malloc(MAX_LEN_ROW * sizeof *textBufferPtr); 
 	
+	return lineCount + 1;
 	//Update lineCount
-	lineCount++;
-	ptr->lineCount = lineCount;
-	
 }
