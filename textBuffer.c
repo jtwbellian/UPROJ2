@@ -38,3 +38,35 @@ int addNewLine(char ** textBufferPtr, int line, int lineCount){
 	return lineCount + 1;
 	//Update lineCount
 }
+
+
+/*
+int fillBuffer(char* file, char* textBuffer[], int lineCount){
+	FILE *in;
+	in = fopen(file, "r");
+	int i;
+	//Allocate memory for each pointer of the buffer
+	for (i = 0; i < MAX_LEN_ROW; i++){
+		textBuffer[i] = malloc(MAX_LEN_ROW * sizeof *textBuffer);
+	}
+	
+	char c;
+	while (lineCount < MAX_LEN_ROW && (c = fgetc(in)) != EOF ){
+		if (c == '\n'){
+			lineCount++;
+		}
+		else if (c == '\t'){
+			char* s = " ";
+			textBuffer[lineCount] = strcat(textBuffer[lineCount], s);
+		}
+		else{
+			char str[2];
+			str[0] = c;
+			str[1] = '\0';
+			textBuffer[lineCount] = strcat(textBuffer[lineCount], str);	
+
+		}
+	}
+	return lineCount;
+}
+*/
