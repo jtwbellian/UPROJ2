@@ -47,5 +47,5 @@ int main(int argc, char * argv[])
 	// Creates the Ncurses Editor
 	Editor editor;
 	Editor *eptr = &editor;
-	init(eptr, ptr->textBuffer, ptr->lineCount,file );
+	init(eptr, ptr->textBuffer, ptr->lineCount, file);
 }
