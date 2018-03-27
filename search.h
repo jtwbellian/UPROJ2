@@ -12,8 +12,6 @@
 
 struct search;
 
-typedef struct search
-{
     char mesg[]="Enter a string: ";		
     char sub[80];
     int row,col;
@@ -27,6 +25,6 @@ typedef struct search
     char answer;
     char newstr[80];
  
-}
+
 
 #endif
