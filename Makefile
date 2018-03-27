@@ -1,11 +1,9 @@
 CC = gcc
 CFLAGS = -Wall -c
 LDFLAGS = -lncurses
-OBJS = Editor.o	Proj2.o textBuffer.o Delete.o
+OBJS = Editor.o	Proj2.o textBuffer.o search.o
 TARGET = Proj2
-DEPS = Editor.h textBuffer.h  delete.h Proj2.c
-
-#all: $(TARGET)
+DEPS = Editor.h textBuffer.h Proj2.c search.h
 
 Proj2: $(OBJS) 
 	$(CC)  -o Proj2 $(OBJS) $(LDFLAGS)
@@ -19,9 +17,8 @@ Editor.o: Editor.h
 textBuffer.o: textBuffer.h
 	$(CC) $(CFLAGS) -o textBuffer.o textBuffer.c $(LDFLAGS)
 
-Delete.o: delete.h
-	$(CC) $(CFLAGS) -o Delete.o delete.c $(LDFLAGS)
-
+search.o: search.h
+	$(CC) $(CFLAGS) -o search.o search.c $(LDFLAGS) 
 
 clean: 
 	rm -f $(OBJS)
