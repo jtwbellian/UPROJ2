@@ -73,9 +73,12 @@ void start(Editor *e)
                                 e->scroll ++;
                         break;
 
+<<<<<<< HEAD
 		// Go insert mode with 'i' (for VIM users)
 		case 73: 
 			e->mode = 'e';
+=======
+>>>>>>> master
                 case 27: // ESC pressed toggle mode
                         if (e->mode == 'e')
 				e->mode = 'c';
@@ -98,7 +101,11 @@ void start(Editor *e)
 				break;
 			// add line
 			case 'o': case 'O':
+<<<<<<< HEAD
 				e->num_lines = addNewLine(e->text, e->y + e->scroll + 1, e->num_lines);
+=======
+				e->num_lines = addNewLine(e->text, e->y + e->scroll , e->num_lines);
+>>>>>>> master
 				break;
 			}		
 		}
@@ -117,8 +124,28 @@ void start(Editor *e)
 			break;
 			
 			case 263: // Backspace
+<<<<<<< HEAD
         	        	// blank out line
                		 	e->text[ e->y + e->scroll -1][e->x-1] = ' ';
+=======
+        	        	{
+				// blank out line
+               		 	//e->text[ e->y + e->scroll -1][e->x-1] = ' ';
+				char * newline = e->text[e->y + e->scroll -1];
+ 	                       int size = strLen(newline);
+        	               // newline[size+1] = '\0';
+
+                	 
+                     
+  
+
+                 
+
+                        	for(int i = e->x-1; i < size; i ++)
+                        	{
+                                	newline[i] = newline[i+1];
+                        	}
+>>>>>>> master
 
              			// adjust cursor
                 		if (e->x >1)
@@ -133,7 +160,11 @@ void start(Editor *e)
                 		}
 
                 		break;
+<<<<<<< HEAD
 			
+=======
+				}
+>>>>>>> master
 			// For everything else, handle in type function
 			default:
 				type(e,ch);
@@ -229,7 +260,12 @@ bool type(Editor *e, char letter)
 	// type plain text
 	default:
 		{	
+<<<<<<< HEAD
 		if (e->x < e->w)
+=======
+		// When the current line is shorter than window width push it along
+		if (strLen(e->text[e->y + e->scroll - 1]) < e->w)
+>>>>>>> master
 		{
 	                char * newline = e->text[e->y + e->scroll -1];
                		int size = strLen(newline);
@@ -251,12 +287,31 @@ bool type(Editor *e, char letter)
 	
 			e->x += 1;
 		}
+<<<<<<< HEAD
 		else
 		{
 			e->y += 1;
 			e->x = 2;
 			addNewLine(e->text, e->y, 0);
 		}
+=======
+		// Move down when reaching end of line, or create new line
+		else if (e->x >= e->w)
+		{
+			e->y += 1;
+			e->x = 2;
+
+			// Append a new line if reaching the end of file 
+			if (e->y + e->scroll - 1 >=  e->num_lines)
+				addNewLine(e->text, e->y, 0);
+		}
+		else if (strLen(e->text[e->y + e->scroll -1]) >= e->w)
+		{
+
+
+		}
+		
+>>>>>>> master
 	
 //		e->text[ e->y + e->scroll - 1] = newline;
 //`		free(newline);

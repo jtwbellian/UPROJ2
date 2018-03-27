@@ -1,9 +1,15 @@
 CC = gcc
 CFLAGS = -Wall -c
 LDFLAGS = -lncurses
+<<<<<<< HEAD
 OBJS = Editor.o	Proj2.o textBuffer.o Delete.o
 TARGET = Proj2
 DEPS = Editor.h textBuffer.h delete.h
+=======
+OBJS = Editor.o	Proj2.o textBuffer.o
+TARGET = Proj2
+DEPS = Editor.h textBuffer.h Proj2.c 
+>>>>>>> master
 
 #all: $(TARGET)
 
@@ -19,6 +25,7 @@ Editor.o: Editor.h
 textBuffer.o: textBuffer.h
 	$(CC) $(CFLAGS) -o textBuffer.o textBuffer.c $(LDFLAGS)
 
+<<<<<<< HEAD
 Delete.o: delete.h
 	$(CC) $(CFLAGS) -o Delete.o delete.c $(LDFLAGS)
 
@@ -27,3 +34,8 @@ Delete.o: delete.h
 
 clean: 
 	rm -f $(OBJS) Proj2
+=======
+
+clean: 
+	rm -f $(OBJS)
+>>>>>>> master
