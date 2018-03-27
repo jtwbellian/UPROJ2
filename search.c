@@ -1,9 +1,8 @@
+#include "search.h"
 #include <ncurses.h>			
 #include <string.h> 
-#include "search.h"
-#define SIZE 10
-#define LENGTH 180
-void search(*str)
+
+void search(char **str)
 {	
     mvprintw(LINES - 4, 0, "%s",mesg);              		
     getstr(sub);
