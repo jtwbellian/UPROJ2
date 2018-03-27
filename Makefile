@@ -3,7 +3,7 @@ CFLAGS = -Wall -c
 LDFLAGS = -lncurses
 OBJS = Editor.o	Proj2.o textBuffer.o
 TARGET = Proj2
-DEPS = Editor.h textBuffer.h
+DEPS = Editor.h textBuffer.h Proj2.c 
 
 #all: $(TARGET)
 
@@ -19,8 +19,6 @@ Editor.o: Editor.h
 textBuffer.o: textBuffer.h
 	$(CC) $(CFLAGS) -o textBuffer.o textBuffer.c $(LDFLAGS)
 
-#test: Proj2 Editor.h
-#	./Proj2
 
 clean: 
-	rm -f $(OBJS) Proj2
+	rm -f $(OBJS)

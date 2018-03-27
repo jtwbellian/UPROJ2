@@ -30,16 +30,22 @@ int main(int argc, char * argv[])
         ptr = (buffer *)malloc(sizeof( buffer));
         //initialize variables of the struct buffer
         ptr->lineCount = 0;
-        char ** lines = ptr->textBuffer;
+       // char ** lines = ptr->textBuffer;
 
         //Pass in those values
         //ptr->textBuffer should have everything
-        ptr->lineCount = fillBuffer(file, lines, ptr->lineCount);
+        ptr->lineCount = fillBuffer(file, ptr->textBuffer, ptr->lineCount);
 
         // (End of Johns textBuffer initialization)
+/*	
+	for(int i =0; i < ptr->lineCount; i ++)
+	{
+
+		printf(">%s\n" , lines[i]);
+	}*/
 
 	// Creates the Ncurses Editor
 	Editor editor;
 	Editor *eptr = &editor;
-	init(eptr, lines, ptr->lineCount);
+	init(eptr, ptr->textBuffer, ptr->lineCount,file );
 }
