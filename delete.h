@@ -6,6 +6,8 @@
 #include <stdio.h>
 #include <string.h>
 
-int Delete (char** text, int row);
+#define MAX_LEN_ROW 999
+
+int Delete (char** text, int lineCount);
 
 #endif
