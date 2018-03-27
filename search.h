@@ -26,3 +26,7 @@ typedef struct search
 
     char answer;
     char newstr[80];
+ 
+}
+
+#endif
