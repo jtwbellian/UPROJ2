@@ -6,6 +6,9 @@
 
 
 int Delete(char ** text,int lineCount){
+
+char src [CHAR_PER_LINE];
+char dest [CHAR_PER_LINE];
 //Vars to store current cursor position
 int x,y;
 //get current position 

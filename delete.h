@@ -7,6 +7,7 @@
 #include <string.h>
 
 #define MAX_LEN_ROW 999
+#define CHAR_PER_LINE 100
 
 int Delete (char** text, int lineCount);
 
