@@ -5,7 +5,10 @@
 #include "delete.h"
 
 
-int Delete(char ** text, int *row int lineCount){
+int Delete(char ** text,int lineCount){
+
+char src [CHAR_PER_LINE];
+char dest [CHAR_PER_LINE];
 //Vars to store current cursor position
 int x,y;
 //get current position 
@@ -17,5 +20,5 @@ for(int i = x; i < lineCount; i++){
    strncpy(dest, src, MAX_LEN_ROW);
    text[i] =  dest;
 }
-
+	return lineCount - 1;
 }
