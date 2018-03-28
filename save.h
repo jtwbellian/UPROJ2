@@ -14,6 +14,6 @@
 
 char *editorRowsToString(int *buflen, int num_lines, char ** text);
 
-void editorSave(string filename);
+void editorSave(string filename, int num_lines, char ** text)
 
 #endif
