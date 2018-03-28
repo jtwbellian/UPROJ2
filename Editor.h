@@ -39,4 +39,7 @@ void update_window(Editor *e);
 void clear_window( Editor *e);
 
 bool type(Editor *e, char letter);
+
+int strLen(char * str);
+
 #endif
