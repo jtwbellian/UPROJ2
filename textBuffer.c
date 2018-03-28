@@ -56,7 +56,8 @@ int fillBuffer(char* file, char* textBuffer[], int lineCount){
 			lineCount++;
 		}
 		else if (c == '\t'){
-			char* s = " ";
+		//	printf("------found a tab-------\n");
+			char* s = "        ";
 			textBuffer[lineCount] = strcat(textBuffer[lineCount], s);
 		}
 		else{
@@ -69,4 +70,5 @@ int fillBuffer(char* file, char* textBuffer[], int lineCount){
 	}
 	return lineCount;
 }
+
 */
