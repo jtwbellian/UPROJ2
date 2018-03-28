@@ -7,6 +7,7 @@
 char filename[20];
 
 // Initializes ncurses and prepares the editor window
+
 void init(Editor *e, char ** lines, int nl, char * fn)
 {
 	strncpy(filename, fn, 20);
@@ -37,6 +38,7 @@ void init(Editor *e, char ** lines, int nl, char * fn)
         wattroff(stdscr,A_REVERSE);
 	
 	refresh();
+
 	start(e);
 }
 
@@ -97,6 +99,15 @@ void start(Editor *e)
 			case 'o': case 'O':
 				e->num_lines = addNewLine(e->text, e->y + e->scroll , e->num_lines);
 				break;
+			// Delete Line 
+			case 'd' : case 'D':
+				
+				break;
+			// Search and replace for a string 
+			case 'f' : case 'F':
+				{
+				search(e->text);
+				}
 			}		
 		}
 		// Keyboard input when in Edit Mode
@@ -113,19 +124,11 @@ void start(Editor *e)
 			case 27:
 			break;
 			
-			case 263: // Backspace
+			case KEY_BACKSPACE: case KEY_DL: // Backspace
         	        	{
 				// blank out line
-               		 	//e->text[ e->y + e->scroll -1][e->x-1] = ' ';
 				char * newline = e->text[e->y + e->scroll -1];
  	                       int size = strLen(newline);
-        	               // newline[size+1] = '\0';
-
-                	 
-                     
-  
-
-                 
 
                         	for(int i = e->x-1; i < size; i ++)
                         	{
@@ -212,32 +215,6 @@ bool type(Editor *e, char letter)
 	
 	switch(letter)
 	{
-	// handle backspace
-	/*
-	case 263:
-		// blank out line
-		e->text[e->x][e->y + e->scroll] = ' ';
-
-		// adjust cursor
-		if (e->x >1)
-		{
-			e->x -= 1;
-		}
-		else
-		{
-                	e->x = 1;
-			if (e->y > 1)
-				e->y --;
-		}
-
-		//push text back
-		for(int i = e->x; i < strlen(e->text[e->y + e->scroll]); i ++)
-		{
-			e->text[e->x - 1][e->y + e->scroll] = e->text[e->x][e->y + e->scroll];
-		}
-
-		break;
-*/
 	// type plain text
 	default:
 		{	
@@ -273,7 +250,7 @@ bool type(Editor *e, char letter)
 			// Append a new line if reaching the end of file 
 			if (e->y + e->scroll - 1 >=  e->num_lines)
 				addNewLine(e->text, e->y, 0);
-		}
+		} 
 		else if (strLen(e->text[e->y + e->scroll -1]) >= e->w)
 		{
 
@@ -281,8 +258,6 @@ bool type(Editor *e, char letter)
 		}
 		
 	
-//		e->text[ e->y + e->scroll - 1] = newline;
-//`		free(newline);
 		break;
 		}
 	}
