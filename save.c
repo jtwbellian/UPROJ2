@@ -30,9 +30,9 @@ char *editorRowsToString(int *buflen, int num_lines, char ** text) {
 }
 
 //saves string to file
-void editorSave(string filename) {
+void editorSave(string filename, int num_lines, char ** text) {
   int len;
-  char *buf = editorRowsToString(&len); //calls editorRowsToString to convert text to a string
+  char *buf = editorRowsToString(&len, num_lines, ** text); //calls editorRowsToString to convert text to a string
   int fd = open(filename, O_RDWR | O_CREAT, 0644); //adds standard permissions for file
   if (fd != -1) {
     if (ftruncate(fd, len) != -1) {
