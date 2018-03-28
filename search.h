@@ -10,8 +10,6 @@
 #define SIZE 50
 #define LENGTH 100
 
-struct search;
-
     char mesg[]="Enter a string: ";		
     char sub[80];
     int row,col;
