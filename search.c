@@ -62,6 +62,7 @@ void search(char **str)
 struct found{
 	int y; //row
 	int x; //col
+	int subStrLen; //length of the substring
 };
 
 void search(char **str, int lineCount)
@@ -75,45 +76,44 @@ void search(char **str, int lineCount)
 	while (strlen(sub) <= 0) {
 		mvprintw(LINES - 4, 0, "%s", mesg);
 	}
-    
-	int subStrLen = strlen(sub); //Length of the searched term
-	char* stringPtr; //Points to the entire row
-	int countMatch = 0; //Count character matches
-	int totalMatch = 0; //Count total matches of searched term
+	int subStrLen = strlen(sub);
+	char* stringPtr;
+	int countMatch = 0;
+	int totalMatch = 0;
 	
 	//Loop for all the lines of the file
 	for (int i = 0; i < lineCount; i++){
 		
-        stringPtr = str[lineCount];
+		stringPtr = str[lineCount];
 		int strLen = strlen(stringPtr);
 		
-        //Loop to check each character of the specific line
+		//Loop to check each character of the specific line
 		for (int j = 0; j < strLen; j++){
 			if (stringPtr[j] == sub[0]){
 				
-                //Loop to see if the subsequent characters of possible match is actually a match
-				//Increment countMatch for each consecutive character 
+				//Loop to see if the subsequent characters of possible match is actually
+				//a match
+				//Increment countMatch
 				countMatch++;
 				for (int k = j + 1, n = 1; k < j + subStrLen && k < strLen && n < subStrLen; k++, n++){
 					if (stringPtr[k] == sub[n]){
 						countMatch++;
 					}
 				}
-                
-                //A total match was found, set the values in the array
+				//Means a total match was found
 				if (countMatch == subStrLen){
 					whereAndLength[totalMatch].y = i;
 					whereAndLength[totalMatch].x = j;
+					whereAndLength[totalMatch].subStrLen = subStrLen;	
 					totalMatch++;
 				}
-                
-                //Resets for the next character set
 				countMatch = 0;
 			}
 		
 		}
 		
 	}
+
     //If totalMatch == 0, print out "nothing found"
     //Else
     //print out "replacement: ", get the replacement string
