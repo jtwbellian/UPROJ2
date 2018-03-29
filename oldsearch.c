@@ -1,96 +1,54 @@
-#include "search.h"
-#include <ncurses.h>			
-#include <string.h> 
 
-void search(char **str)
-{	
-    mvprintw(LINES - 5, 0, "%s",mesg);              		
-    getstr(sub);
-
-    mvprintw(LINES - 5, 0, "You Entered: %s", sub);
-
-    for ( int n = 0; n < SIZE; ++n )
-    {
-        j=0;
-      for(i=0; str[n][i]; i++)
-      {
-        if(str[n][i] == sub[j])
-        {
-          for(k=i, j=0; str[n][k] && sub[j]; j++, k++)
-            if(str[n][k]!=sub[j])
-                break;
-           if(!sub[j])
-            {
-            flag = false;
-            whichstring = n;
-            linelocation = i;
-            wmove(screen,n,i);
-            break;
-            }
-        }
-      }
-    }
-    if ( flag )
-    {
-        mvprintw(LINES - 4, 0, "Not a substring");
-    }
-
-    if ( !flag )
-    {
-        mvprintw(LINES - 3, 0, "Do you want to replace the string located here with another? y/n: ");
-        answer = getch();
-        
-        if ( answer == 'y' || answer == 'Y' )
-        {
-            mvprintw(LINES - 2, 0, "Replacement: ");
-            getstr(newstr);
-            char *p = &newstr;
-            char *h = &str[whichstring][linelocation];
-            strcpy(h, p); 
-            mvprintw(LINES -1, 0, "Completed");           
-        }
-    }
-}
-
-
+//#include "textBuffer.h"
 /*
-#include "search.h"
-#include <ncurses.h>			
+//#include "search.h"
+//#include <ncurses.h>			
 #include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <ctype.h> 
+#define MAX_LEN_ROW 300
+#define MAX_LEN_COL 300
+#define SIZE 300
+
 
 struct found{
 	int y; //row
 	int x; //col
-	int subStrLen; //length of the substring
 };
 
-void search(char **str, int lineCount)
+void search(char** str, int lineCount)
 {	
    	
-	struct found whereAndLength[SIZE];
+	struct found* whereAndLength[SIZE]; 
+	for (int i = 0; i < SIZE; i++){ 
+		whereAndLength[i] = (struct found *)malloc(sizeof(whereAndLength));
+	}
 
-   	mvprintw(LINES - 4, 0, "%s",mesg);              		
-	getstr(sub);
-	mvprintw(LINES - 4, 0, "You Entered: %s", sub);
+   //	mvprintw(LINES - 4, 0, "%s",mesg);
+   	printf("Type in a string to search for: "); 
+        char sub[100];             		
+	scanf("%s", sub);
+	int searchStrLen = strlen(sub);
+   //	mvprintw(LINES - 4, 0, "You Entered: %s", sub);
 	while (strlen(sub) <= 0) {
 		mvprintw(LINES - 4, 0, "%s", mesg);
 	}
 	int subStrLen = strlen(sub);
-	char* stringPtr;
+	char line[MAX_LEN_COL];
 	int countMatch = 0;
 	int totalMatch = 0;
 	
+	
 	//Loop for all the lines of the file
+	//Search portion
 	for (int i = 0; i < lineCount; i++){
-		
-		stringPtr = str[lineCount];
+		char* stringPtr = str[i];
+		printf("This is the line at index %d : %s\n", i, str[i]);
 		int strLen = strlen(stringPtr);
-		
 		//Loop to check each character of the specific line
 		for (int j = 0; j < strLen; j++){
 			if (stringPtr[j] == sub[0]){
-				
 				//Loop to see if the subsequent characters of possible match is actually
 				//a match
 				//Increment countMatch
@@ -100,11 +58,10 @@ void search(char **str, int lineCount)
 						countMatch++;
 					}
 				}
-				//Means a total match was found
+				//This condition means a full match was a found
 				if (countMatch == subStrLen){
-					whereAndLength[totalMatch].y = i;
-					whereAndLength[totalMatch].x = j;
-					whereAndLength[totalMatch].subStrLen = subStrLen;	
+					whereAndLength[totalMatch]->y = i;
+					whereAndLength[totalMatch]->x = j;	
 					totalMatch++;
 				}
 				countMatch = 0;
@@ -114,11 +71,58 @@ void search(char **str, int lineCount)
 		
 	}
 
-    //If totalMatch == 0, print out "nothing found"
-    //Else
-    //print out "replacement: ", get the replacement string
-    //Loop through the array from 0 to totalMatch - 1
-    //Use row, column, and subStrLen to set the replacement where the original searched term was found
-    
+	for (int i = 0; i < totalMatch; i++){
+		printf("Here is whereAndLength[%d] : Row %d : Col %d\n", i, whereAndLength[i]->y, whereAndLength[i]->x);
+	}
+	if (totalMatch == 0){
+		printf("No matches found");
+	}
+	else{
+		char replacement[MAX_LEN_COL];
+		char concatStr[MAX_LEN_COL];
+		char yesOrNo;
+		char* linePtr;
+		printf("Found %d matches!", totalMatch); 
+		printf("Do you want to replace them with a string? y/n:");
+		scanf(" %c", &yesOrNo);
+		if (yesOrNo == 'Y' || yesOrNo == 'y'){
+			printf("Type in the replacement string: ");
+			scanf("%s", replacement);
+			int inputLenOfRep = strlen(replacement);	
+			//Loop through all matches of the found struct
+			//Replace portion
+			for (int i = 0; i < totalMatch; i++){
+				int row = whereAndLength[i]->y;
+				int col = whereAndLength[i]->x;
+				linePtr = str[row];
+				int lenOfLine = strlen(linePtr);
+			//	for (int j = col, k = 0; j < col + inputLenOfRep && j < MAX_LEN_COL && k < inputLenOfRep; j++, k++){
+			//		linePtr[j] = replacement[k];
+			//	}
+				//This loop concats everything from 0 to the index prior to where the match was found
+				for (int j = 0; j < col; j++){
+					concatStr[j] = linePtr[j];
+				}
+				//Insert the replacement where the searched term originally was into the concat array
+				for (int j = col, k = 0; j < col + inputLenOfRep && j < MAX_LEN_COL && k < inputLenOfRep; j++, k++){
+					concatStr[j] = replacement[k];
+				}	
+				//Insert everything else after the searched term
+				for (int j = col + inputLenOfRep, k = col + searchStrLen; j < lenOfLine - searchStrLen + inputLenOfRep && k < lenOfLine; j++, k++){
+					concatStr[j] = linePtr[k];
+				} 
+				//Copy concatStr to the row where the match was found
+				strcpy(str[row], concatStr);	
+			}		
+		}
+		else{
+			printf("You answered no!");
+			
+		}
+	}
+	printf("After replacement:\n");
+	for (int i = 0; i < lineCount; i++){
+		printf("%s\n", str[i]);
+	}
 }
 */
