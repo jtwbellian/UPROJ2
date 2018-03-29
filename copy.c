@@ -8,7 +8,8 @@ int endx, endy;
 int tempx,tempy;
 
 void copyStart() {
-
+	
+	//get cursor starting position
 	getyx(stdscr, tempy, tempx);
 	mvprintw(0, 0, "%s", "Starting index chosen.");
 	move(tempy, tempx);
@@ -19,21 +20,25 @@ void copyStart() {
 
 void copyEnd() {
 	
+	//get cursor ending position
 	getyx(stdscr, endy, endx);
 	getyx(stdscr, tempy, tempx);
-	char copyString[endy-starty];
 	
 	mvprintw(0, 0, "%s", "End index chosen.");
 	move(tempy, tempx);
-	for (s = startx; s < endx; s++) {
-		copyString[s] = mvinch(starty, s);
-	}
 }
 
 void paste() {
 	
 	int pastex, pastey;
+	char copyString[endx-startx]; //string to store copied text
+
+	//load copied text into string
+	for (int s = startx; s < endx; s++) {
+		copyString[s] = mvinch(starty, s);
+	}
 	
+	//paste copied text to screen at cursor location
 	getyx(stdscr, pastey, pastex);
 	for (int i = 0; i < endx - startx; i++) {
 		mvprintw(pastey, i + pastex, "%c", copyString[i]);
