@@ -5,6 +5,7 @@
 #include "Editor.h"
 
 char filename[20];
+bool hasCopied = false;
 
 // Initializes ncurses and prepares the editor window
 
@@ -101,13 +102,32 @@ void start(Editor *e)
 				break;
 			// Delete Line 
 			case 'd' : case 'D':
-				
+				Delete(e->text, e->num_lines);
 				break;
 			// Search and replace for a string 
 			case 'f' : case 'F':
 				{
 				search(e->text);
+				break;
 				}
+			case 's' : case 'S':
+				save(filename, e->num_lines, e->text, e->h, e->w);	
+				break;
+			case 'y' : case 'Y': 
+				if (hasCopied) 
+					{
+					copyEnd();
+					hasCopied = false;
+					}
+				else
+					{
+					copyStart();
+					hasCopied = true;
+					}
+				break;
+			case 'p' : case 'P': 
+				paste();
+				break;
 			}		
 		}
 		// Keyboard input when in Edit Mode
@@ -124,7 +144,20 @@ void start(Editor *e)
 			case 27:
 			break;
 			
-			case KEY_BACKSPACE: case KEY_DL: // Backspace
+			case KEY_ENTER:
+				e->num_lines = addNewLine(e->text, e->y + e->scroll , e->num_lines);
+
+			break;	
+			case KEY_RESIZE: // Recalculate window size
+				getmaxyx(stdscr,e->h,e->w);			
+				break;
+			
+			case KEY_DC: case KEY_DL: // line delete
+				{
+					Delete(e->text, e->num_lines);
+					break;
+				}
+			case KEY_BACKSPACE: // Backspace
         	        	{
 				// blank out line
 				char * newline = e->text[e->y + e->scroll -1];
@@ -156,12 +189,12 @@ void start(Editor *e)
 			break;	
 			};
 		}
+
                 clear_window(e);
                 update_window(e);
                 wattron(stdscr, A_REVERSE);
 		mvprintw(e->h-1,1, (e->mode == 'e') ? "Line %d,%d \t-EDIT MODE-":"Line %d,%d \t-COMMAND MODE-", e->y + e->scroll, e->x);
                 wattroff(stdscr,A_REVERSE);
-
                 wmove(stdscr,e->y,e->x);
 
                 refresh();
@@ -192,11 +225,7 @@ void update_window(Editor *e)
 // Prints blank spaces to clear out the window
 void clear_window( Editor *e)
 {
-	// recalculates window size 
-	// (in case it has been resized since last update)
-        getmaxyx(stdscr,e->h,e->w);
-
-        for(int i = 1; i < e->h-1; i++)
+        for(int i = 1; i < e->h; i++)
         for(int j = 0; j < e->w; j++)
         {
 		if (j==0 && i >= e->num_lines - e->scroll)
@@ -206,63 +235,115 @@ void clear_window( Editor *e)
         }
 }
 
-// Types the current character into the text field. returns true if successful, false if unexpected letter given
+// Types the current character into the text field. 
+// returns true if successful, false if unexpected letter given
 bool type(Editor *e, char letter)
 {
+	char * newline; // pointer to hold the line to be modified
+	int size; // size of the new line
+	char hanging_char; //  letter to be pushed down
+	char tmp_char;
+
 	// Not a printable character
 	if (letter < 32 && letter > 126) 
 		return false;
 	
-	switch(letter)
-	{
-	// type plain text
-	default:
-		{	
-		// When the current line is shorter than window width push it along
-		if (strLen(e->text[e->y + e->scroll - 1]) < e->w)
+	// Not a valid line to type on 
+	if (e->y + e->scroll > e->num_lines)
+		return false;
+
+	// get the current line to manipulate
+	newline = e->text[e->y + e->scroll -1];
+       	size = strLen(newline);
+	
+	// Expand lines that are empty (fill spaces in void)
+	while (size < e->x - 1)
 		{
-	                char * newline = e->text[e->y + e->scroll -1];
-               		int size = strLen(newline);
-                	newline[size+1] = '\0';
-		
-			while (strLen(newline) < e->x - 1)
-				{
-				newline[strLen(newline)]= ' ';
-				newline[strLen(newline)+1] = '\0'; 
-				}
-	
-               	 	for(int i = size; i > e->x - 1; i --)
-               		{
-                        	newline[i] = newline[i-1];
-                	}
-        	        newline[e->x -1] = letter;
-	
-        	        e->text[e->y + e->scroll - 1] = newline;
-	
+		newline[size]= ' ';
+		newline[size + 1] = '\0';
+		size = strLen(newline); 
+		}
+
+        // line is not full, so simply add char at cursor
+        if (size < e->w - 1)
+        {
+                newline[size] = '\0';
+
+                for(int i = size; i > e->x - 1; i --)
+                {
+                        newline[i] = newline[i-1];
+                }
+
+                newline[e->x - 1] = letter;
+		e->text[e->y + e->scroll -1] = newline;
+		if (e->x < e->w - 1)
 			e->x += 1;
-		}
-		// Move down when reaching end of line, or create new line
-		else if (e->x >= e->w)
+		else
 		{
-			e->y += 1;
-			e->x = 2;
-
-			// Append a new line if reaching the end of file 
-			if (e->y + e->scroll - 1 >=  e->num_lines)
-				addNewLine(e->text, e->y, 0);
-		} 
-		else if (strLen(e->text[e->y + e->scroll -1]) >= e->w)
-		{
-
-
+			e->x = 1;
+			e->y +=1;
 		}
+        }
+	else // When the line reaches the end, push down hanging character
+	{
+		hanging_char = newline[size-1];
+
+		for(int i = size - 1; i > e->x - 1; i --)
+                {
+                        newline[i] = newline[i-1];
+                }
+	
+                newline[e->x - 1] = letter;
+		e->text[e->y + e->scroll - 1] = newline;
 		
-	
-		break;
-		}
-	}
+		
+		for(int j = e->y + e->scroll ; j < e->num_lines; j ++)
+		{
+			newline = e->text[j];
+			size = strLen(newline);
+			
+			// if the following line has space, insert hanging char
+			if (size < e->w - 1) 
+			{	
+				for(int i = size; i > 0; i --)
+	               		{
+                	        	newline[i] = newline[i-1];
+        	 	        }
+				
+				newline[0] = hanging_char;	
+				e->text[j] = newline;
 
+				// Exit loop
+				j = e->num_lines;	
+			}
+			else // if the line does not, continue shifting 
+			{
+				tmp_char = newline[size-1];
+
+                            for(int i = size; i > 0; i --)
+                                {
+                                        newline[i] = newline[i-1];
+                                }
+				newline[size] = '\0';			
+				newline[0] = hanging_char;	
+				e->text[j] = newline;
+				
+				hanging_char = tmp_char;
+
+			}		
 	
+		}	
+	if (e->x < e->w - 1)
+		e->x += 1;
+	else
+        {
+              	e->x = 1;
+               	e->y +=1;
+        }
+
+	}
+	
+		
 	return true;
 }
 
@@ -271,7 +352,7 @@ int strLen(char * str)
 {
 	int i = 0;
 	while (str[i] != '\0')
-	{
+	{	
 		i++;
 	}
 
