@@ -8,6 +8,6 @@ void copyStart();
 
 void copyEnd();
 
-void paste();
+char* paste();
 
 #endif
