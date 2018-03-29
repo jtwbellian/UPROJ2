@@ -39,10 +39,10 @@ char* paste() {
 	}
 	
 	//paste copied text to screen at cursor location
-	getyx(stdscr, pastey, pastex);
-	for (int i = 0; i < endx - startx; i++) {
-		mvprintw(pastey, i + pastex, "%c", copyString[i]);
-	}
+	//getyx(stdscr, pastey, pastex);
+	//for (int i = 0; i < endx - startx; i++) {
+	//	mvprintw(pastey, i + pastex, "%c", copyString[i]);
+	//}
 
 	return copyString;
 	
